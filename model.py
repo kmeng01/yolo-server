@@ -35,6 +35,6 @@ def predict_and_draw(img_path, out_img_path):
 
     result_dict = result.to_dict(orient="index")
     return {
-        "img_url": out_img_path,
+        "img_url": str(out_img_path),
         "images": [v for _, v in result_dict.items()],
     }
