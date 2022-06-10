@@ -16,7 +16,7 @@ def predict(img_path):
     return results.pandas().xyxy[0], results.names
 
 
-def predict_and_draw(img_path, out_img_path):
+def predict_and_draw(img_path, out_img_path, out_img_url):
     img = io.imread(img_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -35,6 +35,6 @@ def predict_and_draw(img_path, out_img_path):
 
     result_dict = result.to_dict(orient="index")
     return {
-        "img_url": str(out_img_path),
+        "img_url": out_img_url,
         "images": [v for _, v in result_dict.items()],
     }

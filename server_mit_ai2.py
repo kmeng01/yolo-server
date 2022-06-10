@@ -7,7 +7,7 @@ from pathlib import Path
 from model import predict_and_draw
 
 app = Flask(__name__)
-BASE_PATH = Path("/home/ubuntu/mit-ai2-server/")
+BASE_PATH = Path("/home/ubuntu/mit-ai2-server")
 
 
 @app.route("/ping", methods=["GET"])
@@ -25,6 +25,7 @@ def predict_img():
     result = predict_and_draw(
         BASE_PATH / "to_prc" / f"{cur_id}.jpg",
         BASE_PATH / "gen_img" / f"{cur_id}.jpg",
+        f"/gen_img/{cur_id}.jpg",
     )
 
     pprint(result)
