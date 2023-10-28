@@ -7,3 +7,5 @@ gen_img/*
 
 to_prc/*
 !to_prc/.rmlock
+
+data
