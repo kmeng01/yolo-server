@@ -1,3 +1,5 @@
+.DS_Store
+
 __pycache__
 tmp.txt
 yolov*.pt
@@ -7,3 +9,5 @@ gen_img/*
 
 to_prc/*
 !to_prc/.rmlock
+
+data
