@@ -1,9 +1,7 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from PIL import Image
-from skimage import io
-import torch
+import cv2
 import matplotlib
+import torch
+from skimage import io
 
 yolo_model = torch.hub.load(
     "ultralytics/yolov5", "yolov5s"
@@ -17,26 +15,21 @@ def predict(img_path):
 
 
 def predict_and_draw(img_path, out_img_path):
-    img = Image.open(img_path)
-    img_np = np.array(img)
+    img = io.imread(img_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     result, class_names = predict(img_path)
     result["color"] = result.apply(
-        lambda x: cmap(x["class"] / len(class_names))[:3],
+        lambda x: tuple(c * 255 for c in cmap(x["class"] / len(class_names)))[:3],
         axis=1,
     )
 
     for _, el in result.iterrows():
         p1, p2 = (el["xmin"], el["ymin"]), (el["xmax"], el["ymax"])
         p1, p2 = tuple(map(int, p1)), tuple(map(int, p2))
-        
-        # Drawing rectangle using matplotlib
-        plt.gca().add_patch(plt.Rectangle(p1, p2[0] - p1[0], p2[1] - p1[1], color=el["color"], linewidth=2, fill=False))
+        cv2.rectangle(img, p1, p2, el["color"], 2)
 
-    plt.imshow(img_np)
-    plt.axis('off')  # to remove axis numbers and ticks
-    plt.savefig(out_img_path, bbox_inches='tight', pad_inches=0, format='png')
-    plt.close()
+    cv2.imwrite(str(out_img_path), img)
 
     result_dict = result.to_dict(orient="index")
     return {
