@@ -3,6 +3,7 @@ import matplotlib
 import torch
 from skimage import io
 
+# Define YOLO model ops
 yolo_model = torch.hub.load(
     "ultralytics/yolov5", "yolov5s"
 )  # or yolov5n - yolov5x6, custom
