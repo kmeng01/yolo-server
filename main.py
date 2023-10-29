@@ -1,4 +1,4 @@
-from modal import Image, Stub, Mount, wsgi_app
+from modal import Image, Mount, Stub, wsgi_app
 
 stub = Stub()
 image = (
@@ -20,8 +20,10 @@ def flask_app():
     import time
     from pathlib import Path
     from pprint import pprint
+
     import numpy as np
     from flask import Flask, jsonify, request, send_from_directory
+
     import yolo_backend
 
     # Create necessary directories

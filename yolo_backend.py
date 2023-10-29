@@ -1,3 +1,5 @@
+import hashlib
+
 import cv2
 import matplotlib
 import torch
@@ -8,6 +10,20 @@ yolo_model = torch.hub.load(
     "ultralytics/yolov5", "yolov5s"
 )  # or yolov5n - yolov5x6, custom
 cmap = matplotlib.cm.get_cmap("jet")
+
+
+def hash_to_range(number, N):
+    # Convert the number to a string and then encode it to bytes
+    byte_representation = str(number).encode("utf-8")
+
+    # Use SHA-256 hash function
+    hashed = hashlib.sha256(byte_representation)
+
+    # Convert the hash to an integer
+    hash_integer = int(hashed.hexdigest(), 16)
+
+    # Map the hash to the range [1, N]
+    return 1 + (hash_integer % N)
 
 
 def predict(img_path):
@@ -21,7 +37,12 @@ def predict_and_draw(img_path, out_img_path):
 
     result, class_names = predict(img_path)
     result["color"] = result.apply(
-        lambda x: tuple(c * 255 for c in cmap(x["class"] / len(class_names)))[:3],
+        lambda x: tuple(
+            c * 255
+            for c in cmap(
+                hash_to_range(x["class"], len(class_names)) / len(class_names)
+            )
+        )[:3],
         axis=1,
     )
 
