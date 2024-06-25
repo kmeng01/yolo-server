@@ -9,7 +9,7 @@ from skimage import io
 yolo_model = torch.hub.load(
     "ultralytics/yolov5", "yolov5s"
 )  # or yolov5n - yolov5x6, custom
-cmap = matplotlib.cm.get_cmap("jet")
+cmap = matplotlib.pyplot.get_cmap("jet")
 
 
 def hash_to_range(number, N):
@@ -31,11 +31,11 @@ def predict(img_path):
     return results.pandas().xyxy[0], results.names
 
 
-def predict_and_draw(img_path, out_img_path):
-    img = io.imread(img_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+def predict_and_draw(img , out_img_path):
+    img = io.imread(img)
+    img_cv2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-    result, class_names = predict(img_path)
+    result, class_names = predict(img)
     result["color"] = result.apply(
         lambda x: tuple(
             c * 255
@@ -49,9 +49,9 @@ def predict_and_draw(img_path, out_img_path):
     for _, el in result.iterrows():
         p1, p2 = (el["xmin"], el["ymin"]), (el["xmax"], el["ymax"])
         p1, p2 = tuple(map(int, p1)), tuple(map(int, p2))
-        cv2.rectangle(img, p1, p2, el["color"], 2)
+        cv2.rectangle(img_cv2, p1, p2, el["color"], 2)
 
-    cv2.imwrite(str(out_img_path), img)
+    cv2.imwrite(str(out_img_path), img_cv2)
 
     result_dict = result.to_dict(orient="index")
     return {

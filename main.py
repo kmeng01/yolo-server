@@ -1,24 +1,35 @@
-from modal import Image, Mount, Stub, wsgi_app
+from modal import (
+    App,
+    Image,
+    Mount,
+    wsgi_app,
+)
 
-stub = Stub()
 image = (
-    Image.debian_slim()
-    .apt_install("libgl1-mesa-glx", "libglib2.0-0", "wget", "git")
-    .pip_install(
-        "torch", "torchvision", index_url="https://download.pytorch.org/whl/cpu"
+    Image.debian_slim(python_version="3.12")
+    .apt_install(
+        "libglib2.0-0", "libsm6", "libxrender1", "libxext6", "ffmpeg", "libgl1"
     )
     .pip_install(
-        "flask", "opencv-python", "matplotlib", "scikit-image", "pandas", "requests"
+        "flask",
+        "matplotlib",
+        "scikit-image",
+        "opencv-python",
+        "torch",
+        "pandas",
+        "requests",
     )
 )
 
+app = App("yolo-server")
 
-@stub.function(image=image, mounts=[Mount.from_local_python_packages("yolo_backend")])
+@app.function(image=image, mounts=[Mount.from_local_python_packages("yolo_backend")])
 @wsgi_app()
 def flask_app():
-    import base64
     import time
     from pathlib import Path
+    from io import BytesIO
+    import base64
     from pprint import pprint
 
     import numpy as np
@@ -47,10 +58,9 @@ def flask_app():
             str(int(time.time())) + "_" + str(np.random.randint(0, int(1e10))).zfill(10)
         )
 
-        with open(DATA_PATH / f"to_prc/{cur_id}.jpg", "wb") as f:
-            f.write(base64.b64decode(file))
+        image_data = BytesIO(base64.b64decode(file))
         result = yolo_backend.predict_and_draw(
-            DATA_PATH / "to_prc" / f"{cur_id}.jpg",
+            image_data,
             DATA_PATH / "gen_img" / f"{cur_id}.jpg",
         ) | {"gen_img": f"gen_img/{cur_id}.jpg"}
 
@@ -62,3 +72,6 @@ def flask_app():
         return send_from_directory(DATA_PATH / "gen_img", filepath)
 
     return app
+
+# if __name__ == "__main__":
+#     app.run(debug=True, port=2222)
