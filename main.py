@@ -11,13 +11,14 @@ image = (
         "libglib2.0-0", "libsm6", "libxrender1", "libxext6", "ffmpeg", "libgl1"
     )
     .pip_install(
-        "flask",
-        "matplotlib",
-        "scikit-image",
-        "opencv-python",
-        "torch",
-        "pandas",
-        "requests",
+        "flask==3.0.3",
+        "matplotlib==3.9.2",
+        "scikit-image==0.24.0",
+        "opencv-python==4.10.0.84",
+        "torch==2.5.0",
+        "pandas==2.2.3",
+        "requests==2.32.3",
+        "ultralytics==8.2.48"
     )
 )
 
